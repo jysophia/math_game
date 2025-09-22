@@ -12,12 +12,6 @@ public class FlexibleGridLayout : LayoutGroup
     public override void CalculateLayoutInputVertical()
     {
         // TODO: Implement layout calculation logic here
-
-    }
-
-    public override void SetLayoutHorizontal()
-    {
-        // TODO: Implement horizontal layout logic here
         base.CalculateLayoutInputHorizontal();
         float sqareRoot = Mathf.Sqrt(transform.childCount);
         rows = Mathf.CeilToInt(sqareRoot);
@@ -48,6 +42,11 @@ public class FlexibleGridLayout : LayoutGroup
             SetChildAlongAxis(item, 0, xPos, cellSize.x);
             SetChildAlongAxis(item, 1, yPos, cellSize.y);
         }
+    }
+
+    public override void SetLayoutHorizontal()
+    {
+        // TODO: Implement horizontal layout logic here
     }
 
     public override void SetLayoutVertical()
