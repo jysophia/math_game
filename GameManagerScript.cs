@@ -27,7 +27,6 @@ public class GameManagerScript : MonoBehaviour
             permutations.Add(randomNum);
             permutations.Add(target - randomNum);
         }
-        Debug.Log("Target: " + target);
         Debug.Log("Permutations: " + string.Join(", ", permutations));
     }
 
