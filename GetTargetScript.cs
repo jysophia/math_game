@@ -1,8 +1,11 @@
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 
 public class GetTargetScript : MonoBehaviour
 {
+    public TMP_Text targetText;
+    public int targetNumber;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -18,7 +21,8 @@ public class GetTargetScript : MonoBehaviour
             {
                 await Task.Yield();
             }
-            int targetNumber = gameManager.target;
+            targetNumber = gameManager.target;
+            targetText.text = targetNumber.ToString();
             Debug.Log("Target Found: " + targetNumber);
         }
         else
