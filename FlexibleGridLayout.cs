@@ -1,6 +1,8 @@
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class FlexibleGridLayout : LayoutGroup
 {
@@ -8,39 +10,90 @@ public class FlexibleGridLayout : LayoutGroup
     public int columns;
     public Vector2 cellSize;
     public Vector2 spacing;
+    private List<int> permutations;
+    public List<GameObject> cellTexts;
+    public GameObject numberPrefab;
 
-    public override void CalculateLayoutInputVertical()
+    protected override void Start()
     {
+        ClearGrid();
+        GetPermutationsFromGameManager();
+    }
+
+    void ClearGrid()
+    {
+        if (cellTexts != null)
+        {
+            foreach (Transform child in transform)
+            {
+                Destroy(child.gameObject);
+            }
+            cellTexts.Clear();
+        }
+        
+    }
+
+    async void GetPermutationsFromGameManager()
+    {
+        GameManagerScript gameManager = FindFirstObjectByType<GameManagerScript>();
+        if (gameManager != null)
+        {
+            while (gameManager.permutations == null || gameManager.permutations.Count == 0)
+            {
+                // Wait until permutations are generated
+                await Task.Yield();
+            }
+
+            permutations = gameManager.permutations;
+            for (int i = 0; i < permutations.Count; i++)
+            {
+                GameObject numberPrefab = Instantiate(this.numberPrefab, transform);
+                numberPrefab.GetComponentInChildren<TextMeshProUGUI>().text = permutations[i].ToString();
+                cellTexts.Add(numberPrefab);
+            }
+            Debug.Log("Permutations Found: " + string.Join(", ", permutations));
+        }
+        else
+        {
+            Debug.LogError("GameManagerScript not found in the scene.");
+        }
+    }
+
+    public override async void CalculateLayoutInputVertical()
+    {
+        while (permutations == null || permutations.Count == 0)
+        {
+            await Task.Yield();
+        }
         // TODO: Implement layout calculation logic here
         base.CalculateLayoutInputHorizontal();
-        float sqareRoot = Mathf.Sqrt(transform.childCount);
-        rows = Mathf.CeilToInt(sqareRoot);
-        columns = Mathf.CeilToInt(sqareRoot);
+        int count = permutations.Count;
+        rows = Mathf.CeilToInt(Mathf.Sqrt(count));
+        columns = Mathf.CeilToInt((float)count / rows);
+        Debug.Log("Rows: " + rows + ", Columns: " + columns);
 
         float parentWidth = rectTransform.rect.width;
         float parentHeight = rectTransform.rect.height;
 
-        float cellWidth = parentWidth / (float)columns - ((spacing.x / (float)columns) * 2) - (padding.left / (float)columns) - (padding.right / (float)columns);
-        float cellHeight = parentHeight / (float)rows - ((spacing.y / (float)rows) * 2) - (padding.top / (float)rows) - (padding.bottom / (float)rows);
+        float cellWidth = parentWidth / columns - (spacing.x / columns * 2) - (padding.left / (float)columns) - (padding.right / (float)columns);
+        float cellHeight = parentHeight / rows - (spacing.y / rows * 2) - (padding.top / (float)rows) - (padding.bottom / (float)rows);
 
         cellSize.x = cellWidth;
         cellSize.y = cellHeight;
 
-        int columnCount = 0;
-        int rowCount = 0;
-
-        for (int i = 0; i < rectChildren.Count; i++)
+        for (int i = 0; i < cellTexts.Count; i++)
         {
-            rowCount = i / columns;
-            columnCount = i % columns;
+            int rowCount = i / columns;
+            int columnCount = i % columns;
 
-            var item = rectChildren[i];
+            var item = cellTexts[i];
 
             var xPos = (cellSize.x * columnCount) + (spacing.x * columnCount) + padding.left;
             var yPos = (cellSize.y * rowCount) + (spacing.y * rowCount) + padding.top;
-
-            SetChildAlongAxis(item, 0, xPos, cellSize.x);
-            SetChildAlongAxis(item, 1, yPos, cellSize.y);
+            Debug.Log("cellSize.x: " + cellSize.x + ", cellSize.y: " + cellSize.y);
+            Debug.Log("xPos: " + xPos + ", yPos: " + yPos);
+            SetChildAlongAxis(item.GetComponent<RectTransform>(), 0, xPos, cellSize.x);
+            SetChildAlongAxis(item.GetComponent<RectTransform>(), 1, yPos, cellSize.y);
         }
     }
 

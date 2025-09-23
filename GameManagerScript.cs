@@ -27,7 +27,6 @@ public class GameManagerScript : MonoBehaviour
             permutations.Add(randomNum);
             permutations.Add(target - randomNum);
         }
-        Debug.Log("Permutations: " + string.Join(", ", permutations));
     }
 
     // Update is called once per frame
