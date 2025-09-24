@@ -23,7 +23,6 @@ public class GetTargetScript : MonoBehaviour
             }
             targetNumber = gameManager.target;
             targetText.text = targetNumber.ToString();
-            Debug.Log("Target Found: " + targetNumber);
         }
         else
         {

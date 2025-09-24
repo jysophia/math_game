@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -41,7 +41,7 @@ public class FlexibleGridLayout : LayoutGroup
             while (gameManager.permutations == null || gameManager.permutations.Count == 0)
             {
                 // Wait until permutations are generated
-                await Task.Yield();
+                await UniTask.Yield();
             }
 
             permutations = gameManager.permutations;
@@ -51,7 +51,6 @@ public class FlexibleGridLayout : LayoutGroup
                 numberPrefab.GetComponentInChildren<TextMeshProUGUI>().text = permutations[i].ToString();
                 cellTexts.Add(numberPrefab);
             }
-            Debug.Log("Permutations Found: " + string.Join(", ", permutations));
         }
         else
         {
@@ -63,14 +62,13 @@ public class FlexibleGridLayout : LayoutGroup
     {
         while (permutations == null || permutations.Count == 0)
         {
-            await Task.Yield();
+            await UniTask.Yield();
         }
         // TODO: Implement layout calculation logic here
         base.CalculateLayoutInputHorizontal();
         int count = permutations.Count;
         rows = Mathf.CeilToInt(Mathf.Sqrt(count));
         columns = Mathf.CeilToInt((float)count / rows);
-        Debug.Log("Rows: " + rows + ", Columns: " + columns);
 
         float parentWidth = rectTransform.rect.width;
         float parentHeight = rectTransform.rect.height;
@@ -90,8 +88,6 @@ public class FlexibleGridLayout : LayoutGroup
 
             var xPos = (cellSize.x * columnCount) + (spacing.x * columnCount) + padding.left;
             var yPos = (cellSize.y * rowCount) + (spacing.y * rowCount) + padding.top;
-            Debug.Log("cellSize.x: " + cellSize.x + ", cellSize.y: " + cellSize.y);
-            Debug.Log("xPos: " + xPos + ", yPos: " + yPos);
             SetChildAlongAxis(item.GetComponent<RectTransform>(), 0, xPos, cellSize.x);
             SetChildAlongAxis(item.GetComponent<RectTransform>(), 1, yPos, cellSize.y);
         }
