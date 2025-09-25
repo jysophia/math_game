@@ -20,6 +20,11 @@ public class FlexibleGridLayout : LayoutGroup
         GetPermutationsFromGameManager();
     }
 
+    void Update()
+    {
+        
+    }
+
     void ClearGrid()
     {
         if (cellTexts != null)
