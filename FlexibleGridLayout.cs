@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +11,7 @@ public class FlexibleGridLayout : LayoutGroup
     public Vector2 cellSize;
     public Vector2 spacing;
     private List<int> permutations;
-    public List<GameObject> cellTexts;
+    public List<GameObject> numbersOnGrid;
     public GameObject numberPrefab;
 
     protected override void Start()
@@ -20,15 +20,20 @@ public class FlexibleGridLayout : LayoutGroup
         GetPermutationsFromGameManager();
     }
 
+    void Update()
+    {
+        
+    }
+
     void ClearGrid()
     {
-        if (cellTexts != null)
+        if (numbersOnGrid != null)
         {
             foreach (Transform child in transform)
             {
                 Destroy(child.gameObject);
             }
-            cellTexts.Clear();
+            numbersOnGrid.Clear();
         }
         
     }
@@ -41,7 +46,7 @@ public class FlexibleGridLayout : LayoutGroup
             while (gameManager.permutations == null || gameManager.permutations.Count == 0)
             {
                 // Wait until permutations are generated
-                await Task.Yield();
+                await UniTask.Yield();
             }
 
             permutations = gameManager.permutations;
@@ -49,9 +54,8 @@ public class FlexibleGridLayout : LayoutGroup
             {
                 GameObject numberPrefab = Instantiate(this.numberPrefab, transform);
                 numberPrefab.GetComponentInChildren<TextMeshProUGUI>().text = permutations[i].ToString();
-                cellTexts.Add(numberPrefab);
+                numbersOnGrid.Add(numberPrefab);
             }
-            Debug.Log("Permutations Found: " + string.Join(", ", permutations));
         }
         else
         {
@@ -63,14 +67,13 @@ public class FlexibleGridLayout : LayoutGroup
     {
         while (permutations == null || permutations.Count == 0)
         {
-            await Task.Yield();
+            await UniTask.Yield();
         }
         // TODO: Implement layout calculation logic here
         base.CalculateLayoutInputHorizontal();
         int count = permutations.Count;
         rows = Mathf.CeilToInt(Mathf.Sqrt(count));
         columns = Mathf.CeilToInt((float)count / rows);
-        Debug.Log("Rows: " + rows + ", Columns: " + columns);
 
         float parentWidth = rectTransform.rect.width;
         float parentHeight = rectTransform.rect.height;
@@ -81,17 +84,15 @@ public class FlexibleGridLayout : LayoutGroup
         cellSize.x = cellWidth;
         cellSize.y = cellHeight;
 
-        for (int i = 0; i < cellTexts.Count; i++)
+        for (int i = 0; i < numbersOnGrid.Count; i++)
         {
             int rowCount = i / columns;
             int columnCount = i % columns;
 
-            var item = cellTexts[i];
+            var item = numbersOnGrid[i];
 
             var xPos = (cellSize.x * columnCount) + (spacing.x * columnCount) + padding.left;
             var yPos = (cellSize.y * rowCount) + (spacing.y * rowCount) + padding.top;
-            Debug.Log("cellSize.x: " + cellSize.x + ", cellSize.y: " + cellSize.y);
-            Debug.Log("xPos: " + xPos + ", yPos: " + yPos);
             SetChildAlongAxis(item.GetComponent<RectTransform>(), 0, xPos, cellSize.x);
             SetChildAlongAxis(item.GetComponent<RectTransform>(), 1, yPos, cellSize.y);
         }
