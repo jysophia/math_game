@@ -53,11 +53,11 @@ public class TestingInputSystem : MonoBehaviour, IPointerClickHandler
             multipleSelectedNumbers.Clear();
             while (multipleSelectedNumberPrefabs.Count > 0)
             {
-                var numberPrefabOfInterest = multipleSelectedNumberPrefabs.Pop();
-                if (grid != null && grid.numbersOnGrid.Contains(numberPrefabOfInterest))
+                var numberPrefabToClear = multipleSelectedNumberPrefabs.Pop();
+                if (grid != null && grid.numbersOnGrid.Contains(numberPrefabToClear))
                 {
-                    int indexOfNumberPrefabOfInterest = grid.numbersOnGrid.IndexOf(numberPrefabOfInterest);
-                    grid.numbersOnGrid[indexOfNumberPrefabOfInterest].GetComponentInChildren<TextMeshProUGUI>().text = "";
+                    int indexOfNumberPrefabToClear = grid.numbersOnGrid.IndexOf(numberPrefabToClear);
+                    grid.numbersOnGrid[indexOfNumberPrefabToClear].GetComponentInChildren<TextMeshProUGUI>().text = "";
                     numberPrefabsClearedSoFar++;
                 }
             }
