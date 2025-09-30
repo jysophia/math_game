@@ -11,7 +11,7 @@ public class FlexibleGridLayout : LayoutGroup
     public Vector2 cellSize;
     public Vector2 spacing;
     private List<int> permutations;
-    public List<GameObject> cellTexts;
+    public List<GameObject> numbersOnGrid;
     public GameObject numberPrefab;
 
     protected override void Start()
@@ -27,13 +27,13 @@ public class FlexibleGridLayout : LayoutGroup
 
     void ClearGrid()
     {
-        if (cellTexts != null)
+        if (numbersOnGrid != null)
         {
             foreach (Transform child in transform)
             {
                 Destroy(child.gameObject);
             }
-            cellTexts.Clear();
+            numbersOnGrid.Clear();
         }
         
     }
@@ -54,7 +54,7 @@ public class FlexibleGridLayout : LayoutGroup
             {
                 GameObject numberPrefab = Instantiate(this.numberPrefab, transform);
                 numberPrefab.GetComponentInChildren<TextMeshProUGUI>().text = permutations[i].ToString();
-                cellTexts.Add(numberPrefab);
+                numbersOnGrid.Add(numberPrefab);
             }
         }
         else
@@ -84,12 +84,12 @@ public class FlexibleGridLayout : LayoutGroup
         cellSize.x = cellWidth;
         cellSize.y = cellHeight;
 
-        for (int i = 0; i < cellTexts.Count; i++)
+        for (int i = 0; i < numbersOnGrid.Count; i++)
         {
             int rowCount = i / columns;
             int columnCount = i % columns;
 
-            var item = cellTexts[i];
+            var item = numbersOnGrid[i];
 
             var xPos = (cellSize.x * columnCount) + (spacing.x * columnCount) + padding.left;
             var yPos = (cellSize.y * rowCount) + (spacing.y * rowCount) + padding.top;

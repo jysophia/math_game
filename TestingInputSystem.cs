@@ -10,7 +10,9 @@ public class TestingInputSystem : MonoBehaviour, IPointerClickHandler
     private FlexibleGridLayout grid;
     private static List<int> multipleSelectedNumbers = new List<int>();
     private static Stack<GameObject> multipleSelectedNumberPrefabs = new Stack<GameObject>();
-    private static int count;
+
+    private static int numberPrefabsClearedSoFar = 0;
+    private static int sumSoFar;
     private int target;
     async void Start()
     {
@@ -24,6 +26,7 @@ public class TestingInputSystem : MonoBehaviour, IPointerClickHandler
             }
 
             target = gameManager.target;
+            grid = FindFirstObjectByType<FlexibleGridLayout>();
         }
         else
         {
@@ -38,31 +41,38 @@ public class TestingInputSystem : MonoBehaviour, IPointerClickHandler
         var selectedNumber = int.Parse(text);
         multipleSelectedNumbers.Add(selectedNumber);
         multipleSelectedNumberPrefabs.Push(numberPrefab);
-        count += selectedNumber;
+        sumSoFar += selectedNumber;
     }
 
     public void Update()
     {
-        if (count == target && multipleSelectedNumbers.Count >= 2)
+        if (sumSoFar == target && multipleSelectedNumbers.Count >= 2)
         {
             Debug.Log("CORRECT!");
-            count = 0;
+            sumSoFar = 0;
             multipleSelectedNumbers.Clear();
             while (multipleSelectedNumberPrefabs.Count > 0)
             {
-                var numberCellObject = multipleSelectedNumberPrefabs.Pop();
-                if (grid != null && grid.cellTexts.Contains(numberCellObject))
+                var numberPrefabOfInterest = multipleSelectedNumberPrefabs.Pop();
+                if (grid != null && grid.numbersOnGrid.Contains(numberPrefabOfInterest))
                 {
-                    grid.cellTexts.Remove(numberCellObject);
+                    int indexOfNumberPrefabOfInterest = grid.numbersOnGrid.IndexOf(numberPrefabOfInterest);
+                    grid.numbersOnGrid[indexOfNumberPrefabOfInterest].GetComponentInChildren<TextMeshProUGUI>().text = "";
+                    numberPrefabsClearedSoFar++;
                 }
-                Destroy(numberCellObject);
+            }
+            if (numberPrefabsClearedSoFar >= grid.numbersOnGrid.Count)
+            {
+                Debug.Log("CLEAR!");
+                numberPrefabsClearedSoFar = 0;
             }
         }
-        else if (count != target && multipleSelectedNumbers.Count >= 2)
+        else if (sumSoFar != target && multipleSelectedNumbers.Count >= 2)
         {
             Debug.Log("WRONG!");
-            count = 0;
+            sumSoFar = 0;
             multipleSelectedNumbers.Clear();
+            multipleSelectedNumberPrefabs.Clear();
         }
     }
 }

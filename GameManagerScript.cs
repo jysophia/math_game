@@ -7,7 +7,6 @@ public class GameManagerScript : MonoBehaviour
     public List<int> permutations;
     public int gridWidth = 2;
     public int gridHeight = 2;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         GenerateTargetAndPermutations();
