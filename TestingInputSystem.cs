@@ -10,7 +10,6 @@ public class TestingInputSystem : MonoBehaviour, IPointerClickHandler
     private FlexibleGridLayout grid;
     private static List<int> multipleSelectedNumbers = new List<int>();
     private static Stack<GameObject> multipleSelectedNumberPrefabs = new Stack<GameObject>();
-
     private static int numberPrefabsClearedSoFar = 0;
     private static int sumSoFar;
     private int target;

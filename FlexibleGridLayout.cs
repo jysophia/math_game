@@ -49,7 +49,7 @@ public class FlexibleGridLayout : LayoutGroup
                 await UniTask.Yield();
             }
 
-            permutations = gameManager.permutations;
+            permutations = ShufflePermutations(gameManager.permutations);
             for (int i = 0; i < permutations.Count; i++)
             {
                 GameObject numberPrefab = Instantiate(this.numberPrefab, transform);
@@ -61,6 +61,19 @@ public class FlexibleGridLayout : LayoutGroup
         {
             Debug.LogError("GameManagerScript not found in the scene.");
         }
+    }
+
+    public List<int> ShufflePermutations(List<int> retrievedPermutations)
+    {
+        List<int> shuffledPermutations = new List<int>();
+
+        for (int i = 0; i < retrievedPermutations.Count; i++)
+        {
+            int position = Random.Range(0, shuffledPermutations.Count);
+            shuffledPermutations.Add((position == shuffledPermutations.Count) ? retrievedPermutations[i] : shuffledPermutations[position]);
+            shuffledPermutations[position] = retrievedPermutations[i];
+        }
+        return shuffledPermutations;
     }
 
     public override async void CalculateLayoutInputVertical()
